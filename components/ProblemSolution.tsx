@@ -43,12 +43,12 @@ export const ProblemSolution: React.FC = () => {
             </div>
 
             {/* New Way */}
-            <div className="bg-kvadra-cyan/5 backdrop-blur-md rounded-2xl p-8 border border-kvadra-cyan/30 relative overflow-hidden shadow-[0_0_30px_rgba(34,211,238,0.05)]">
-              <div className="absolute top-0 right-0 bg-kvadra-cyan px-4 py-1 rounded-bl-xl text-xs font-bold text-black uppercase shadow-[0_0_15px_rgba(34,211,238,0.4)]">
-                Решение Cloud OS
+            <div className="bg-kvadra-purple/5 backdrop-blur-md rounded-2xl p-8 border border-kvadra-purple/30 relative overflow-hidden shadow-[0_0_30px_rgba(192,132,252,0.05)]">
+              <div className="absolute top-0 right-0 bg-kvadra-purple px-4 py-1 rounded-bl-xl text-xs font-bold text-black uppercase shadow-[0_0_15px_rgba(192,132,252,0.4)]">
+                Решение kvadra Cloud OS
               </div>
               <div className="mb-6 flex justify-center">
-                <div className="w-16 h-16 bg-kvadra-cyan/10 rounded-full flex items-center justify-center text-kvadra-cyan shadow-[inset_0_0_20px_rgba(34,211,238,0.2)] border border-kvadra-cyan/20">
+                <div className="w-16 h-16 bg-kvadra-purple/10 rounded-full flex items-center justify-center text-kvadra-purple shadow-[inset_0_0_20px_rgba(192,132,252,0.2)] border border-kvadra-purple/20">
                   <RefreshCw className="w-8 h-8" />
                 </div>
               </div>
@@ -56,7 +56,7 @@ export const ProblemSolution: React.FC = () => {
               
               <div className="space-y-4">
                 <div className="bg-white/5 p-4 rounded-xl border border-white/10 flex items-start gap-4 hover:bg-white/10 transition-colors group">
-                  <div className="bg-white/10 p-2 rounded-lg text-slate-300 group-hover:text-kvadra-cyan transition-colors">
+                  <div className="bg-white/10 p-2 rounded-lg text-slate-300 group-hover:text-kvadra-purple transition-colors">
                      <HardDrive className="w-5 h-5" />
                   </div>
                   <div>
@@ -66,12 +66,12 @@ export const ProblemSolution: React.FC = () => {
                 </div>
 
                 <div className="bg-white/5 p-4 rounded-xl border border-white/10 flex items-start gap-4 hover:bg-white/10 transition-colors group">
-                  <div className="bg-white/10 p-2 rounded-lg text-slate-300 group-hover:text-kvadra-cyan transition-colors">
+                  <div className="bg-white/10 p-2 rounded-lg text-slate-300 group-hover:text-kvadra-purple transition-colors">
                      <Laptop className="w-5 h-5" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-white">Новые легкие ноутбуки</h4>
-                    <p className="text-sm text-slate-400">Закупка бюджетных устройств, оптимизированных под Cloud OS.</p>
+                    <p className="text-sm text-slate-400">Закупка бюджетных устройств, оптимизированных под kvadra Cloud OS.</p>
                   </div>
                 </div>
               </div>

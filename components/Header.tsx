@@ -13,6 +13,22 @@ export const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const element = document.querySelector(href);
+    if (element) {
+      const headerOffset = 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+    setIsMenuOpen(false);
+  };
+
   const navLinks = [
     { name: 'Решение', href: '#solution' },
     { name: 'Экономия', href: '#tco' },
@@ -27,11 +43,14 @@ export const Header: React.FC = () => {
       }`}
     >
       <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-        <div className="flex items-center gap-2 cursor-pointer group" onClick={() => window.scrollTo(0,0)}>
-          <div className="bg-white/10 p-1.5 rounded-lg border border-white/10 group-hover:border-kvadra-cyan/50 transition-colors">
-            <Cloud className="w-6 h-6 text-kvadra-cyan" />
+        <div 
+            className="flex items-center gap-2 cursor-pointer group" 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        >
+          <div className="bg-white/10 p-1.5 rounded-lg border border-white/10 group-hover:border-kvadra-purple/50 transition-colors">
+            <Cloud className="w-6 h-6 text-kvadra-purple" />
           </div>
-          <span className="text-xl font-bold text-white tracking-tight">Cloud<span className="text-kvadra-cyan">OS</span></span>
+          <span className="text-xl font-bold text-white tracking-tight">kvadra Cloud<span className="text-kvadra-purple">OS</span></span>
         </div>
 
         {/* Desktop Nav */}
@@ -39,19 +58,21 @@ export const Header: React.FC = () => {
           {navLinks.map((link) => (
             <a 
               key={link.name} 
-              href={link.href} 
+              href={link.href}
+              onClick={(e) => scrollToSection(e, link.href)}
               className="text-sm font-medium text-slate-400 hover:text-white transition-colors relative group"
             >
               {link.name}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-kvadra-cyan transition-all group-hover:w-full"></span>
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-kvadra-purple transition-all group-hover:w-full"></span>
             </a>
           ))}
         </nav>
 
         <div className="hidden md:block">
           <a 
-            href="#contact"
-            className="px-5 py-2.5 bg-kvadra-cyan hover:bg-cyan-400 text-black text-sm font-bold rounded-full transition-all shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:shadow-[0_0_25px_rgba(34,211,238,0.5)]"
+            href="#tco"
+            onClick={(e) => scrollToSection(e, '#tco')}
+            className="px-5 py-2.5 bg-kvadra-purple hover:bg-purple-400 text-black font-bold rounded-full transition-all shadow-[0_0_15px_rgba(192,132,252,0.3)] hover:shadow-[0_0_25px_rgba(192,132,252,0.5)] cursor-pointer block"
           >
             Рассчитать TCO
           </a>
@@ -72,17 +93,17 @@ export const Header: React.FC = () => {
           {navLinks.map((link) => (
             <a 
               key={link.name} 
-              href={link.href} 
-              className="text-slate-300 font-medium py-2 hover:text-kvadra-cyan"
-              onClick={() => setIsMenuOpen(false)}
+              href={link.href}
+              onClick={(e) => scrollToSection(e, link.href)}
+              className="text-slate-300 font-medium py-2 hover:text-kvadra-purple"
             >
               {link.name}
             </a>
           ))}
           <a 
-            href="#contact"
-            className="text-center w-full px-5 py-3 bg-kvadra-cyan text-black font-bold rounded-lg"
-            onClick={() => setIsMenuOpen(false)}
+            href="#tco"
+            onClick={(e) => scrollToSection(e, '#tco')}
+            className="text-center w-full px-5 py-3 bg-kvadra-purple text-black font-bold rounded-lg cursor-pointer block"
           >
             Рассчитать TCO
           </a>

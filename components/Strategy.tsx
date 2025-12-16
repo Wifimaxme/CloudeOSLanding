@@ -23,8 +23,8 @@ export const Strategy: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-8 rounded-2xl bg-kvadra-cyan/5 backdrop-blur-md border border-kvadra-cyan/10 hover:shadow-[0_0_20px_rgba(34,211,238,0.1)] transition-all group">
-              <div className="w-12 h-12 bg-kvadra-cyan/10 rounded-xl flex items-center justify-center text-kvadra-cyan mb-6 group-hover:bg-kvadra-cyan/20 transition-colors border border-kvadra-cyan/20">
+            <div className="p-8 rounded-2xl bg-kvadra-purple/5 backdrop-blur-md border border-kvadra-purple/10 hover:shadow-[0_0_20px_rgba(192,132,252,0.1)] transition-all group">
+              <div className="w-12 h-12 bg-kvadra-purple/10 rounded-xl flex items-center justify-center text-kvadra-purple mb-6 group-hover:bg-kvadra-purple/20 transition-colors border border-kvadra-purple/20">
                 <Building2 className="w-6 h-6 animate-scale-subtle" />
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Госкомпании</h3>
@@ -50,9 +50,9 @@ export const Strategy: React.FC = () => {
               <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-center">
                   
                   {/* Stage 1 */}
-                  <div className="w-48 h-48 rounded-full bg-kvadra-cyan/10 backdrop-blur-sm flex items-center justify-center border-4 border-[#0b0f19] ring-2 ring-kvadra-cyan/30 shadow-xl z-30 relative animate-scale-subtle p-4" style={{ animationDelay: '0s' }}>
+                  <div className="w-48 h-48 rounded-full bg-kvadra-purple/10 backdrop-blur-sm flex items-center justify-center border-4 border-[#0b0f19] ring-2 ring-kvadra-purple/30 shadow-xl z-30 relative animate-scale-subtle p-4" style={{ animationDelay: '0s' }}>
                       <div>
-                          <p className="font-bold text-kvadra-cyan text-lg leading-tight mb-1">Легкая ОС</p>
+                          <p className="font-bold text-kvadra-purple text-lg leading-tight mb-1">Легкая ОС</p>
                           <p className="text-xs text-slate-400">на старое железо</p>
                       </div>
                   </div>
@@ -60,7 +60,7 @@ export const Strategy: React.FC = () => {
                   <div className="hidden md:block w-12 h-1 bg-white/10"></div>
                   
                   {/* Stage 2 */}
-                  <div className="w-64 h-64 rounded-full bg-kvadra-purple/10 backdrop-blur-sm flex items-center justify-center border-4 border-[#0b0f19] ring-2 ring-kvadra-purple/30 shadow-xl z-20 -ml-8 md:ml-0 animate-scale-subtle p-6" style={{ animationDelay: '1s' }}>
+                  <div className="w-64 h-64 rounded-full bg-kvadra-indigo/10 backdrop-blur-sm flex items-center justify-center border-4 border-[#0b0f19] ring-2 ring-kvadra-indigo/30 shadow-xl z-20 -ml-8 md:ml-0 animate-scale-subtle p-6" style={{ animationDelay: '1s' }}>
                       <div>
                           <p className="font-bold text-white text-lg mb-2">Обновление</p>
                           <p className="text-xs text-slate-400 leading-snug">
