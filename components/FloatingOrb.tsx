@@ -46,6 +46,7 @@ export const FloatingOrb: React.FC = () => {
   // Storage for pre-calculated voxel shapes
   const rubleGridRef = useRef<{x:number, y:number, z:number}[]>([]);
   const lightningGridRef = useRef<{x:number, y:number, z:number}[]>([]);
+  const refreshGridRef = useRef<{x:number, y:number, z:number}[]>([]);
 
   // Animation State Refs for smooth transitions
   const currentCenterRef = useRef({ x: 0, y: 0 });
@@ -56,53 +57,39 @@ export const FloatingOrb: React.FC = () => {
   const LERP_FACTOR = 0.05; 
   const CENTER_LERP_FACTOR = 0.02;
 
+  // UPDATED KVADRA COLORS
   const COLORS = {
-    hero: '#0ea5e9',
-    solution: '#ef4444',
-    tco: '#10b981',
-    ux: '#eab308',
-    security: '#6366f1',
-    strategy: '#f97316',
-    contact: '#ffffff'
+    hero: '#22d3ee', // Cyan
+    solution: '#22d3ee', // Cyan
+    tco: '#2dd4bf', // Teal
+    ux: '#eab308', // Yellow (kept for contrast)
+    security: '#818cf8', // Indigo
+    strategy: '#f97316', // Orange
+    contact: '#ffffff' // White
   };
 
   // Pre-calculate Voxel Grids
   useEffect(() => {
+    const step = 0.08;
+    
     // --- RUBLE GENERATION ---
     if (rubleGridRef.current.length === 0) {
         const voxels: {x:number, y:number, z:number}[] = [];
-        const step = 0.08; // Finer resolution for smoother curves
         const depth = 0.20; 
 
-        // Helper to add a box
-        const addBox = (x1: number, x2: number, y1: number, y2: number, z1: number, z2: number) => {
-            for (let x = x1; x <= x2; x += step) {
-                for (let y = y1; y <= y2; y += step) {
-                    for (let z = z1; z <= z2; z += step) {
-                        voxels.push({ x, y, z });
-                    }
-                }
-            }
-        };
-
         // 1. Stem (Vertical bar)
-        addBox(-0.15, 0.15, -0.8, 0.8, -depth/2, depth/2);
+        for (let x = -0.15; x <= 0.15; x += step) {
+            for (let y = -0.8; y <= 0.8; y += step) {
+                for (let z = -depth/2; z <= depth/2; z += step) voxels.push({ x, y, z });
+            }
+        }
 
         // 2. Bowl (Curved 'P' part)
-        // Arc center roughly at top part of stem
-        const cx = 0.15;
-        const cy = -0.45;
-        const rOuter = 0.35;
-        const rInner = 0.15;
-        
-        // Scan bounding box for the arc
+        const cx = 0.15, cy = -0.45, rOuter = 0.35, rInner = 0.15;
         for (let x = cx; x <= cx + rOuter; x += step) {
              for (let y = cy - rOuter; y <= cy + rOuter; y += step) {
                  for (let z = -depth/2; z <= depth/2; z += step) {
-                     const dx = x - cx;
-                     const dy = y - cy;
-                     const distSq = dx*dx + dy*dy;
-                     // Right half of a ring
+                     const distSq = (x - cx)**2 + (y - cy)**2;
                      if (distSq >= rInner*rInner && distSq <= rOuter*rOuter && x >= cx - step/2) {
                          voxels.push({ x, y, z });
                      }
@@ -111,8 +98,11 @@ export const FloatingOrb: React.FC = () => {
         }
 
         // 3. Strike (Horizontal bar)
-        // Placed slightly below the loop
-        addBox(-0.35, 0.35, 0.1, 0.3, -depth/2, depth/2);
+        for (let x = -0.35; x <= 0.35; x += step) {
+            for (let y = 0.1; y <= 0.3; y += step) {
+                for (let z = -depth/2; z <= depth/2; z += step) voxels.push({ x, y, z });
+            }
+        }
 
         rubleGridRef.current = voxels;
     }
@@ -120,41 +110,80 @@ export const FloatingOrb: React.FC = () => {
     // --- LIGHTNING GENERATION ---
     if (lightningGridRef.current.length === 0) {
         const voxels: {x:number, y:number, z:number}[] = [];
-        const step = 0.1; 
         const thickness = 0.15;
+        const lightningStep = 0.1;
         
-        // Define segments for a classic lightning bolt
-        const p1 = {x: 0.3, y: -0.9, z: 0};
-        const p2 = {x: -0.2, y: 0.0, z: 0};
-        
-        const p3 = {x: -0.2, y: 0.0, z: 0};
-        const p4 = {x: 0.3, y: -0.1, z: 0};
+        const segments = [
+          [{x: 0.3, y: -0.9, z: 0}, {x: -0.2, y: 0.0, z: 0}],
+          [{x: -0.2, y: 0.0, z: 0}, {x: 0.3, y: -0.1, z: 0}],
+          [{x: 0.3, y: -0.1, z: 0}, {x: -0.3, y: 0.9, z: 0}]
+        ];
 
-        const p5 = {x: 0.3, y: -0.1, z: 0};
-        const p6 = {x: -0.3, y: 0.9, z: 0};
-
-        const bounds = { xMin: -0.5, xMax: 0.5, yMin: -1.0, yMax: 1.0, zMin: -0.3, zMax: 0.3 };
-        
-        const segments = [[p1, p2], [p3, p4], [p5, p6]];
-
-        for (let x = bounds.xMin; x <= bounds.xMax; x += step) {
-            for (let y = bounds.yMin; y <= bounds.yMax; y += step) {
-                for (let z = bounds.zMin; z <= bounds.zMax; z += step) {
+        for (let x = -0.5; x <= 0.5; x += lightningStep) {
+            for (let y = -1.0; y <= 1.0; y += lightningStep) {
+                for (let z = -0.3; z <= 0.3; z += lightningStep) {
                     const p = {x, y, z};
-                    let isInside = false;
                     for (const [start, end] of segments) {
                         if (distToSegmentSquared(p, start, end) < thickness * thickness) {
-                            isInside = true;
+                            voxels.push({x, y, z});
                             break;
                         }
-                    }
-                    if (isInside) {
-                        voxels.push({x, y, z});
                     }
                 }
             }
         }
         lightningGridRef.current = voxels;
+    }
+
+    // --- REFRESH/UPDATE ICON GENERATION ---
+    if (refreshGridRef.current.length === 0) {
+        const voxels: {x:number, y:number, z:number}[] = [];
+        const radius = 0.6;
+        const tubeThickness = 0.15;
+        const voxelStep = 0.08;
+
+        // Scan box
+        for (let x = -0.8; x <= 0.8; x += voxelStep) {
+            for (let y = -0.8; y <= 0.8; y += voxelStep) {
+                for (let z = -0.15; z <= 0.15; z += voxelStep) {
+                    const r = Math.sqrt(x*x + y*y);
+                    // Check if inside the ring thickness
+                    if (Math.abs(r - radius) <= tubeThickness) {
+                        let angle = Math.atan2(y, x); // -PI to PI
+                        if (angle < 0) angle += Math.PI * 2;
+                        const deg = angle * 180 / Math.PI;
+
+                        const isGap1 = (deg > 30 && deg < 70);
+                        const isGap2 = (deg > 210 && deg < 250);
+                        
+                        if (!isGap1 && !isGap2) {
+                            voxels.push({x, y, z});
+                        }
+                    }
+                }
+            }
+        }
+
+        const addArrowHead = (angleDeg: number) => {
+            const rad = angleDeg * Math.PI / 180;
+            const cx = Math.cos(rad) * radius;
+            const cy = Math.sin(rad) * radius;
+            
+            for (let x = -0.25; x <= 0.25; x+=voxelStep) {
+                for (let y = -0.25; y <= 0.25; y+=voxelStep) {
+                     for (let z = -0.15; z <= 0.15; z+=voxelStep) {
+                         if (x*x + y*y + z*z < 0.05) {
+                             voxels.push({x: cx+x, y: cy+y, z: z});
+                         }
+                     }
+                }
+            }
+        };
+        
+        addArrowHead(30);
+        addArrowHead(210);
+
+        refreshGridRef.current = voxels;
     }
 
   }, []);
@@ -199,6 +228,13 @@ export const FloatingOrb: React.FC = () => {
 
   const getLightningTarget = (i: number, total: number, size: number) => {
     const voxels = lightningGridRef.current;
+    if (voxels.length === 0) return { x: 0, y: 0, z: 0 };
+    const v = voxels[i % voxels.length];
+    return { x: v.x * size, y: v.y * size, z: v.z * size };
+  };
+
+  const getRefreshTarget = (i: number, total: number, size: number) => {
+    const voxels = refreshGridRef.current;
     if (voxels.length === 0) return { x: 0, y: 0, z: 0 };
     const v = voxels[i % voxels.length];
     return { x: v.x * size, y: v.y * size, z: v.z * size };
@@ -287,13 +323,16 @@ export const FloatingOrb: React.FC = () => {
           break;
         case 'solution':
           destCx = width * 0.15; destCy = height * 0.5;
-          targetColorHex = COLORS.solution; shapeType = 'cube';
-          rotSpeed = { x: 0.005, y: 0.005, z: 0 };
+          targetColorHex = COLORS.solution; shapeType = 'refresh'; // Changed to 'refresh'
+          shapeSize = 160; 
+          rotSpeed = { x: 0, y: 0, z: -0.02 }; // Rotate around Z axis (which is facing viewer in default orientation? No, Z is depth.)
+          // We want it to spin like a wheel. In this 3D space, assuming default camera looking down Z?
+          // Let's test rotation below.
           break;
         case 'tco':
           destCx = width * 0.90; destCy = height * 0.4;
           targetColorHex = COLORS.tco; shapeType = 'ruble';
-          shapeSize = 180; // Larger for blocky look
+          shapeSize = 180; 
           rotSpeed = { x: 0, y: 0.005, z: 0 }; 
           break;
         case 'ux':
@@ -305,7 +344,7 @@ export const FloatingOrb: React.FC = () => {
         case 'security':
           destCx = width * 0.5; destCy = height * 0.5;
           targetColorHex = COLORS.security; shapeType = 'shield'; shapeSize = 160;
-          rotSpeed = { x: 0, y: Math.sin(Date.now() * 0.001) * 0.002, z: 0 };
+          rotSpeed = { x: 0, y: 0, z: 0 };
           break;
         case 'strategy':
           destCx = width * 0.5; destCy = height * 0.5;
@@ -323,21 +362,37 @@ export const FloatingOrb: React.FC = () => {
       currentCenterRef.current.x = lerp(currentCenterRef.current.x, destCx, CENTER_LERP_FACTOR);
       currentCenterRef.current.y = lerp(currentCenterRef.current.y, destCy, CENTER_LERP_FACTOR);
       
-      // Enforce Upright Orientation for specific shapes (Ruble, Lightning, Shield)
-      // to avoid them being upside down due to accumulated rotation from previous sections.
-      if (activeSectionRef.current === 'tco' || activeSectionRef.current === 'ux' || activeSectionRef.current === 'security') {
-         // Find nearest multiple of 2PI to keep rotation continuous but bring it to upright
-         const targetX = Math.round(currentRotationRef.current.x / (Math.PI * 2)) * (Math.PI * 2);
-         const targetZ = Math.round(currentRotationRef.current.z / (Math.PI * 2)) * (Math.PI * 2);
+      // Enforce Upright Orientation for specific shapes
+      if (activeSectionRef.current === 'tco' || activeSectionRef.current === 'ux' || activeSectionRef.current === 'security' || activeSectionRef.current === 'solution') {
+         // Default upright orientation
+         let targetX = Math.round(currentRotationRef.current.x / (Math.PI * 2)) * (Math.PI * 2);
+         let targetY = Math.round(currentRotationRef.current.y / (Math.PI * 2)) * (Math.PI * 2);
+         let targetZ = Math.round(currentRotationRef.current.z / (Math.PI * 2)) * (Math.PI * 2);
          
-         // Smoothly interpolate towards upright orientation (X=0, Z=0)
-         currentRotationRef.current.x = lerp(currentRotationRef.current.x, targetX, 0.05);
-         currentRotationRef.current.z = lerp(currentRotationRef.current.z, targetZ, 0.05);
-         
-         // Apply Y rotation (spinning)
-         currentRotationRef.current.y += rotSpeed.y;
+         if (activeSectionRef.current === 'solution') {
+             // For refresh icon, we want it facing the user (X=0, Y=0) and spinning around Z?
+             // Or spinning around Y?
+             // A flat icon facing screen is on XY plane. Z is depth.
+             // Spinning it like a wheel means rotating around Z.
+             // But 'rotSpeed' is added to currentRotation.
+             currentRotationRef.current.z += rotSpeed.z;
+             
+             // Stabilize X and Y to face user
+             currentRotationRef.current.x = lerp(currentRotationRef.current.x, targetX, 0.05);
+             currentRotationRef.current.y = lerp(currentRotationRef.current.y, targetY, 0.05);
+         } else {
+             // TCO (Ruble) and UX (Lightning) spin around Y
+             currentRotationRef.current.x = lerp(currentRotationRef.current.x, targetX, 0.05);
+             currentRotationRef.current.z = lerp(currentRotationRef.current.z, targetZ, 0.05);
+             
+             if (activeSectionRef.current === 'security') {
+                const sway = Math.sin(Date.now() * 0.0015) * 0.15; 
+                currentRotationRef.current.y = lerp(currentRotationRef.current.y, targetY + sway, 0.05);
+             } else {
+                currentRotationRef.current.y += rotSpeed.y;
+             }
+         }
       } else {
-         // Standard rotation for other shapes
          currentRotationRef.current.x += rotSpeed.x;
          currentRotationRef.current.y += rotSpeed.y;
          currentRotationRef.current.z += rotSpeed.z;
@@ -361,6 +416,7 @@ export const FloatingOrb: React.FC = () => {
         else if (shapeType === 'shield') t = getShieldTarget(i, PARTICLE_COUNT, shapeSize);
         else if (shapeType === 'galaxy') t = getGalaxyTarget(i, PARTICLE_COUNT, shapeSize);
         else if (shapeType === 'plane') t = getPlaneTarget(i, PARTICLE_COUNT, shapeSize);
+        else if (shapeType === 'refresh') t = getRefreshTarget(i, PARTICLE_COUNT, shapeSize);
 
         // Rotation
         const x1 = t.x * cosY - t.z * sinY;
@@ -390,10 +446,8 @@ export const FloatingOrb: React.FC = () => {
         // Render
         ctx.fillStyle = `rgba(${Math.round(p.r)}, ${Math.round(p.g)}, ${Math.round(p.b)}, ${alpha})`;
         
-        if (shapeType === 'ruble' || shapeType === 'lightning') {
-            // Draw slightly rounded squares for volumetric look
-            const s = 4 * sizeScale;
-            // Native roundRect check or fallback to fillRect
+        if (shapeType === 'ruble' || shapeType === 'lightning' || shapeType === 'refresh') {
+            const s = 5 * sizeScale;
             if (typeof ctx.roundRect === 'function') {
                 ctx.beginPath();
                 ctx.roundRect(p.x - s/2, p.y - s/2, s, s, s * 0.25);
@@ -402,9 +456,8 @@ export const FloatingOrb: React.FC = () => {
                 ctx.fillRect(p.x - s/2, p.y - s/2, s, s);
             }
         } else {
-            // Draw Dots
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 2 * sizeScale, 0, Math.PI * 2);
+            ctx.arc(p.x, p.y, 2.5 * sizeScale, 0, Math.PI * 2);
             ctx.fill();
         }
       });
@@ -441,7 +494,7 @@ export const FloatingOrb: React.FC = () => {
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed inset-0 pointer-events-none z-[-1]"
+      className="fixed inset-0 pointer-events-none z-[-1] blur-[0px]"
     />
   );
 };
