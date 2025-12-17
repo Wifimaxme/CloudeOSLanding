@@ -61,7 +61,7 @@ export const ProblemSolution: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-white">Вторая жизнь старых ПК</h4>
-                    <p className="text-sm text-slate-400">Установите бесплатную легкую ОС на существующее оборудование.</p>
+                    <p className="text-sm text-slate-400">Установите легкую ОС на существующее оборудование.</p>
                   </div>
                 </div>
 

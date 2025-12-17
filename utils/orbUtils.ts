@@ -172,12 +172,51 @@ export const getShieldTarget = (i: number, total: number, size: number) => {
   const row = Math.floor(Math.sqrt(total));
   const u = (i % row) / row; 
   const v = Math.floor(i / row) / row;
-  const xRaw = (u - 0.5) * 2;
-  const yRaw = (v - 0.5) * 2;
-  const y = yRaw * size * 1.2;
-  const widthAtY = Math.cos(yRaw * 1.2) * size;
-  const x = xRaw * widthAtY;
-  const z = Math.cos(xRaw * Math.PI / 2) * size * 0.3;
+
+  // Medieval Heater Shield Shape Calculation
+  // 'v' determines Y (height)
+  const yNorm = (v - 0.45) * 2.1; 
+  
+  // Width calculation (X) based on Y
+  let widthScale = 0;
+  const curveStart = -0.3; // Point where straight sides begin curving to tip
+
+  if (yNorm < curveStart) {
+    // Top section: Straight sides
+    widthScale = 1.0; 
+  } else {
+    // Lower section: Curve to the tip
+    const t = (yNorm - curveStart) / (1.1 - curveStart); 
+    // Classic Heater shield curve
+    widthScale = Math.cos(Math.min(t, 1) * Math.PI / 2);
+  }
+
+  // Calculate X and Y
+  const x = (u - 0.5) * 2 * size * widthScale;
+  const y = yNorm * size * 0.9;
+  
+  // Z-Axis: Volumetric Enhancement
+  const xNorm = (u - 0.5) * 2; // -1 to 1 relative to width
+  
+  // 1. Base Convexity (Bulge)
+  // Deeper curve for volume (0.9 factor in cos)
+  // Scaled by 0.6 of size for significant depth
+  let z = Math.cos(xNorm * 0.9) * size * 0.6;
+  
+  // 2. Vertical Curvature 
+  // Shields often curve slightly top-to-bottom as well
+  z *= Math.cos(yNorm * 0.2); 
+
+  // 3. Thickness Layers
+  // Distribute particles into depth layers to create a "thick" object
+  const numLayers = 6;
+  // Use prime number multiplier to decorrelate layer from grid position
+  const layer = (i * 11) % numLayers; 
+  const thickness = size * 0.25; 
+  const zDepth = ((layer / (numLayers - 1)) - 0.5) * thickness;
+
+  z += zDepth;
+
   return { x, y, z };
 };
 
