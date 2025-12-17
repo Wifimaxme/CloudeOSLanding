@@ -1,20 +1,32 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# kvadra Cloud OS Landing Page
 
-# Run and deploy your AI Studio app
+Современный лендинг для демонстрации преимуществ kvadra Cloud OS: экономика (TCO), безопасность и скорость работы.
 
-This contains everything you need to run your app locally.
+## Стек технологий
 
-View your app in AI Studio: https://ai.studio/apps/drive/12CVWFzL4gQBpvME6-1kHjR4qXb6Ek26W
+- **React 18**
+- **TypeScript**
+- **Tailwind CSS** — стилизация
+- **Lucide React** — иконки
+- **Recharts** — графики для калькулятора TCO
 
-## Run Locally
+## Основные возможности
 
-**Prerequisites:**  Node.js
+1. **Анимированное ядро (`FloatingOrb`)**: Кастомная 3D-анимация на Canvas, меняющая форму в зависимости от активной секции (Сфера -> Рубль -> Молния -> Щит и т.д.).
+2. **Калькулятор TCO**: Интерактивный расчет экономии при переходе на Cloud OS с динамическими графиками.
+3. **Демонстрация UX**: Визуальная симуляция скорости загрузки ОС по сравнению с Windows.
+4. **Форма заявок**: Serverless-отправка данных в Google Таблицу через Google Apps Script.
 
+## Установка и запуск
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+# Установка зависимостей
+npm install
+
+# Запуск локального сервера
+npm run dev
+```
+
+## Настройка формы
+
+Интеграция с Google Sheets настроена в файле `components/Contact.tsx`. Используется Google Apps Script Web App для приема POST-запросов.

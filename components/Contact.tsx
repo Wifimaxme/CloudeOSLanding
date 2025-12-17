@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Send, Download, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
 
-// ВСТАВЬТЕ СЮДА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ GOOGLE APPS SCRIPT
-// Пример: "https://script.google.com/macros/s/AKfycbx.../exec"
+// URL веб-приложения Google Apps Script для сбора заявок
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOYM2YYqlyiny6aZHZlCwq8ndfPXybTbmnSzqC-Il-D05ik9TYN6rEM0_AKPEnDd0D/exec"; 
 
 export const Contact: React.FC = () => {
