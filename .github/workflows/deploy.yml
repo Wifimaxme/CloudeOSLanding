@@ -30,21 +30,35 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
+          set -e
+          echo "Installing dependencies..."
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
           echo "Dependencies installed successfully"
           echo "Checking key files..."
-          test -f index.html && echo "✓ index.html exists" || echo "✗ index.html missing"
-          test -f index.tsx && echo "✓ index.tsx exists" || echo "✗ index.tsx missing"
-          test -f package.json && echo "✓ package.json exists" || echo "✗ package.json missing"
+          test -f index.html && echo "✓ index.html exists" || (echo "✗ index.html missing" && exit 1)
+          test -f index.tsx && echo "✓ index.tsx exists" || (echo "✗ index.tsx missing" && exit 1)
+          test -f package.json && echo "✓ package.json exists" || (echo "✗ package.json missing" && exit 1)
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
 
       - name: Build
         run: |
+          set -e
           echo "Starting build..."
           echo "NODE_ENV: $NODE_ENV"
           echo "GITHUB_ACTIONS: $GITHUB_ACTIONS"
-          npm run build
+          echo "Current directory: $(pwd)"
+          echo "Files in root:"
+          ls -la | head -20
+          echo "Running build command..."
+          npm run build || (echo "Build failed!" && exit 1)
           echo "Build completed successfully"
-          ls -la dist/
+          echo "Contents of dist:"
+          ls -la dist/ || echo "dist directory not found!"
         env:
           NODE_ENV: production
           GITHUB_ACTIONS: true

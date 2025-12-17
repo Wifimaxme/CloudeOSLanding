@@ -3,8 +3,12 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
-  // Для GitHub Pages всегда используем base path
-  const base = mode === 'production' || process.env.GITHUB_ACTIONS ? '/CloudeOSLanding/' : '/';
+  // Для GitHub Pages всегда используем base path в продакшене
+  // В dev режиме используем '/', в production - '/CloudeOSLanding/'
+  const isProduction = mode === 'production' || process.env.NODE_ENV === 'production';
+  const base = isProduction ? '/CloudeOSLanding/' : '/';
+  
+  console.log(`Vite config: mode=${mode}, NODE_ENV=${process.env.NODE_ENV}, base=${base}`);
   
   return {
     base,
