@@ -1,8 +1,76 @@
-import React from 'react';
-import { Send, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { Send, Download, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
 
+// ВСТАВЬТЕ СЮДА ВАШ URL ВЕБ-ПРИЛОЖЕНИЯ GOOGLE APPS SCRIPT
+// Пример: "https://script.google.com/macros/s/AKfycbx.../exec"
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOYM2YYqlyiny6aZHZlCwq8ndfPXybTbmnSzqC-Il-D05ik9TYN6rEM0_AKPEnDd0D/exec"; 
+
 export const Contact: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    company: '',
+    email: ''
+  });
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+
+    const formBody = new FormData();
+    formBody.append('name', formData.name);
+    formBody.append('company', formData.company);
+    formBody.append('email', formData.email);
+
+    try {
+        if (GOOGLE_SCRIPT_URL) {
+            // Отправка в Google Таблицу
+            // mode: 'no-cors' нужен, так как Google скрипты редиректят ответ, 
+            // и браузеры блокируют чтение ответа, но данные все равно доходят.
+            await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: formBody,
+                mode: 'no-cors' 
+            });
+        } else {
+            // Если URL не указан, имитируем отправку и используем mailto как фоллбек
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const subject = encodeURIComponent(`Заявка на пилот: ${formData.company}`);
+            const body = encodeURIComponent(
+                `Здравствуйте, d.rublevskiy@yadro.com!\n\n` +
+                `Поступила новая заявка с лендинга kvadra Cloud OS:\n\n` +
+                `ФИО: ${formData.name}\n` +
+                `Компания: ${formData.company}\n` +
+                `Email: ${formData.email}\n`
+            );
+            window.location.href = `mailto:d.rublevskiy@yadro.com?subject=${subject}&body=${body}`;
+        }
+
+        setStatus('success');
+        setFormData({ name: '', company: '', email: '' });
+
+    } catch (error) {
+        console.error("Ошибка отправки формы:", error);
+        // В случае ошибки сети пробуем mailto как запасной вариант
+        const subject = encodeURIComponent(`Заявка на пилот: ${formData.company}`);
+        const body = encodeURIComponent(
+            `ФИО: ${formData.name}\nКомпания: ${formData.company}\nEmail: ${formData.email}\n`
+        );
+        window.location.href = `mailto:d.rublevskiy@yadro.com?subject=${subject}&body=${body}`;
+        setStatus('success'); // Считаем успехом, так как открыли почту
+    }
+  };
+
   return (
     <section id="contact" className="py-20 relative bg-[#0f172a]/40 backdrop-blur-3xl border-t border-white/10 shadow-[0_-20px_60px_rgba(0,0,0,0.5)] overflow-hidden">
       {/* Subtle top sheen for the glass edge */}
@@ -58,29 +126,89 @@ export const Contact: React.FC = () => {
                <div className="absolute -top-20 -right-20 w-64 h-64 bg-kvadra-purple/20 blur-[80px] rounded-full mix-blend-screen"></div>
 
               <h3 className="text-2xl font-bold mb-6 relative z-10">Заявка на пилот</h3>
-              <form className="space-y-4 relative z-10" onSubmit={(e) => e.preventDefault()}>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">ФИО</label>
-                  <input type="text" className="w-full px-4 py-3 rounded-xl border border-white/10 bg-black/20 text-white focus:bg-black/40 focus:border-kvadra-purple focus:ring-1 focus:ring-kvadra-purple outline-none transition-all placeholder:text-slate-500" placeholder="Иван Иванов" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Компания</label>
-                  <input type="text" className="w-full px-4 py-3 rounded-xl border border-white/10 bg-black/20 text-white focus:bg-black/40 focus:border-kvadra-purple focus:ring-1 focus:ring-kvadra-purple outline-none transition-all placeholder:text-slate-500" placeholder="ООО Вектор" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">Email</label>
-                  <input type="email" className="w-full px-4 py-3 rounded-xl border border-white/10 bg-black/20 text-white focus:bg-black/40 focus:border-kvadra-purple focus:ring-1 focus:ring-kvadra-purple outline-none transition-all placeholder:text-slate-500" placeholder="ivan@company.ru" />
-                </div>
-                <div className="pt-2">
-                  <button type="submit" className="w-full py-4 bg-kvadra-purple hover:bg-purple-400 text-black font-bold rounded-xl shadow-[0_0_20px_rgba(192,132,252,0.3)] transition-all flex items-center justify-center gap-2 hover:scale-[1.02]">
-                     Отправить заявку
-                     <Send className="w-4 h-4" />
+              
+              {status === 'success' ? (
+                <div className="flex flex-col items-center justify-center py-10 text-center animate-fade-in-up">
+                  <div className="w-16 h-16 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mb-4 border border-green-500/20 shadow-[0_0_20px_rgba(74,222,128,0.2)]">
+                    <CheckCircle className="w-8 h-8" />
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-2">Заявка отправлена!</h4>
+                  <p className="text-slate-400">Мы свяжемся с вами в ближайшее время.</p>
+                  <button 
+                    onClick={() => setStatus('idle')}
+                    className="mt-6 text-sm text-kvadra-purple hover:text-white transition-colors"
+                  >
+                    Отправить еще одну заявку
                   </button>
                 </div>
-                <p className="text-xs text-center text-slate-500 mt-4">
-                  Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных.
-                </p>
-              </form>
+              ) : (
+                <form className="space-y-4 relative z-10" onSubmit={handleSubmit}>
+                  {!GOOGLE_SCRIPT_URL && (
+                      <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg flex items-start gap-2 text-xs text-yellow-200 mb-2">
+                          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                          <span>Режим демо: Данные откроются в почтовом клиенте. Для сохранения в таблицу настройте Google Script URL в коде.</span>
+                      </div>
+                  )}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">ФИО</label>
+                    <input 
+                      required
+                      type="text" 
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-white/10 bg-black/20 text-white focus:bg-black/40 focus:border-kvadra-purple focus:ring-1 focus:ring-kvadra-purple outline-none transition-all placeholder:text-slate-500" 
+                      placeholder="Иван Иванов" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Компания</label>
+                    <input 
+                      required
+                      type="text" 
+                      name="company"
+                      value={formData.company}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-white/10 bg-black/20 text-white focus:bg-black/40 focus:border-kvadra-purple focus:ring-1 focus:ring-kvadra-purple outline-none transition-all placeholder:text-slate-500" 
+                      placeholder="ООО Вектор" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">Email</label>
+                    <input 
+                      required
+                      type="email" 
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-white/10 bg-black/20 text-white focus:bg-black/40 focus:border-kvadra-purple focus:ring-1 focus:ring-kvadra-purple outline-none transition-all placeholder:text-slate-500" 
+                      placeholder="ivan@company.ru" 
+                    />
+                  </div>
+                  <div className="pt-2">
+                    <button 
+                      type="submit" 
+                      disabled={status === 'loading'}
+                      className="w-full py-4 bg-kvadra-purple hover:bg-purple-400 disabled:bg-slate-600 disabled:cursor-not-allowed text-black font-bold rounded-xl shadow-[0_0_20px_rgba(192,132,252,0.3)] transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-100"
+                    >
+                       {status === 'loading' ? (
+                         <>
+                           <Loader2 className="w-4 h-4 animate-spin" />
+                           Отправка...
+                         </>
+                       ) : (
+                         <>
+                           Отправить заявку
+                           <Send className="w-4 h-4" />
+                         </>
+                       )}
+                    </button>
+                  </div>
+                  <p className="text-xs text-center text-slate-500 mt-4">
+                    Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных.
+                  </p>
+                </form>
+              )}
             </div>
 
           </div>
