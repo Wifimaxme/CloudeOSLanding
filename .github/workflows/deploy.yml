@@ -26,24 +26,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install dependencies
         run: |
           set -e
           echo "Installing dependencies..."
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          # Удаляем package-lock.json и node_modules для чистой установки
+          rm -rf package-lock.json node_modules
+          # Устанавливаем зависимости с полной установкой optional dependencies
+          npm install
           echo "Dependencies installed successfully"
           echo "Checking key files..."
           test -f index.html && echo "✓ index.html exists" || (echo "✗ index.html missing" && exit 1)
           test -f index.tsx && echo "✓ index.tsx exists" || (echo "✗ index.tsx missing" && exit 1)
           test -f package.json && echo "✓ package.json exists" || (echo "✗ package.json missing" && exit 1)
-          echo "Node version: $(node --version)"
-          echo "NPM version: $(npm --version)"
 
       - name: Build
         run: |
