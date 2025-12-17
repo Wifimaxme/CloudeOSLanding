@@ -137,9 +137,9 @@ export const FloatingOrb: React.FC = () => {
           rotSpeed = { x: 0.001, y: 0.001, z: 0 };
           break;
         case 'contact':
-          destCx = width * 0.85; destCy = height * 0.85;
-          targetColorHex = COLORS.contact; shapeType = 'plane'; shapeSize = 80;
-          rotSpeed = { x: 0, y: 0.01, z: 0 };
+          destCx = width * 0.85; destCy = height * 0.5;
+          targetColorHex = COLORS.contact; shapeType = 'cube'; shapeSize = 120;
+          rotSpeed = { x: 0.005, y: 0.005, z: 0.002 };
           break;
       }
 
@@ -221,7 +221,7 @@ export const FloatingOrb: React.FC = () => {
         
         ctx.fillStyle = `rgba(${Math.round(p.r)}, ${Math.round(p.g)}, ${Math.round(p.b)}, ${alpha})`;
         
-        if (['ruble', 'lightning', 'refresh'].includes(shapeType)) {
+        if (['ruble', 'lightning', 'refresh', 'cube'].includes(shapeType)) {
             const s = 5 * sizeScale;
             if (typeof ctx.roundRect === 'function') {
                 ctx.beginPath();
